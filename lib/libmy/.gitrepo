@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://git.abrignon.dev/adrienbrignon/libmy
+	branch = master
+	commit = 2459d839ccc6647dec1803e49811924cd1df87ab
+	parent = 06be64bfb9019cda0015e2b70b72e1959217d688
+	method = merge
+	cmdver = 0.4.0
