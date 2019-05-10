@@ -11,4 +11,8 @@
 #include "corewar/vm.h"
 #include "corewar/asm.h"
 
+#define EXIT_ERROR (84)
+
+char *str_join(const char *a, char sep, const char *b);
+
 #endif

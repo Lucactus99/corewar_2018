@@ -6,10 +6,11 @@
 ##
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Iinclude -O2 -pedantic -g
+CFLAGS = -Wall -Wextra -O2 -pedantic -Iinclude -g
+CFLAGS += -Ilib/libmy/include -Ilib/libredcode/include -Ilib/liblist/include
 CFLAGS += -Wshadow -Wno-unused-parameter -Wpointer-arith
 LDFLAGS = -Llib/libmy -Llib/liblist -Llib/libredcode
-LDLIBS = -lmy -llist -lredcode
+LDLIBS = -lredcode -lmy -llist
 
 ASM_NAME = asm/asm
 ASM_SRCS = $(wildcard src/asm/*.c) $(wildcard src/asm/**/*.c)
