@@ -8,54 +8,31 @@
 #ifndef REDCODE_H
 #define REDCODE_H
 
-#include <stdio.h>
-#include <stddef.h>
+#include "types.h"
 
-#include "config.h"
+#define ENCODE_8(val) ((uint8_t []) {my_atoi(val)})
+#define ENCODE_16(val) ((uint16_t []) {__bswap_16(my_atoi(val))})
+#define ENCODE_32(val) ((uint32_t []) {__bswap_32(my_atoi(val))})
 
-typedef enum type {
-    T_NONE = 0,
-    T_REG = 1 << 0,
-    T_DIR = 1 << 1,
-    T_IND = 1 << 2,
-    T_LAB = 1 << 3,
-    T_NAME = 1 << 4,
-    T_COMMENT = 1 << 5
-} type_t;
-
-typedef struct parser {
-    off_t offset;
-    size_t size;
-    FILE *src;
-    FILE *dest;
-} parser_t;
-
-typedef struct argument {
-    type_t type;
-    size_t size;
-    const void *value;
-} argument_t;
-
-typedef struct token {
-    const char *name;
-    size_t args;
-    unsigned int type[MAX_ARGS];
-    unsigned char code;
-    size_t cycles;
-} token_t;
-
-int redcode_encode(FILE *src, FILE *dst);
-
-int parse_name(parser_t *parser);
-int encode_name(parser_t *parser, char *str, FILE *dst);
-int parse_comment(parser_t *parser);
-int encode_comment(parser_t *parser, char *str, FILE *dst);
 int parse_size(parser_t *parser);
+int parser_reset(parser_t *parser);
+int parse_labels(parser_t *parser);
+int redcode_encode(FILE *src, FILE *dst);
+int encode_instruction(parser_t *parser, instruction_t *instruction);
+
+size_t redcode_write(parser_t *parser, const void *ptr, size_t size, size_t n);
 
 ssize_t readfile(FILE *fp, char **ptr);
 
-size_t redcode_write(parser_t *p, const void *ptr, size_t size, size_t nmemb);
+off_t redcode_header(parser_t *parser);
 
-const token_t *get_token(const char *str);
+mnemonic_t get_mnemonic(const char *str);
+
+argument_t get_argument(unsigned int types, const char *str);
+
+directive_t *parse_directive(const char *str);
+directive_t *get_directive(parser_t *parser, const char *name);
+
+instruction_t *parse_instruction(parser_t *parser, char *line);
 
 #endif

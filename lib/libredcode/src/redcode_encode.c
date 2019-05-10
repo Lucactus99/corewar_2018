@@ -5,47 +5,56 @@
 ** Encode a redcode file to an executable.
 */
 
-#include "config.h"
-#include "redcode.h"
-#include "my_string.h"
-#include "my_stdlib.h"
-#include <byteswap.h>
+#include <stdint.h>
+#include <stdlib.h>
 
-static int write_argument(parser_t *parser, char *str, FILE *dst, int size)
+#include "redcode.h"
+#include "my/my_ctype.h"
+#include "my/my_string.h"
+
+static int encode_instructions(parser_t *parser)
 {
-    for (int i = 1; i < size; i++)
-        redcode_write(parser, (char []) {0}, sizeof(char), 1);
-    redcode_write(parser, (char []) {my_atoi(str + 1)}, sizeof(char), 1);
+    node_t *node = parser->instructions->first;
+
+    while (node != NULL) {
+        instruction_t *ins = node->data;
+
+        if (ins->mnemonic.name != NULL)
+            encode_instruction(parser, ins);
+
+        node = node->next;
+    }
+
     return 0;
 }
 
-static argument_t get_argument(char *line)
+static int encode_header(parser_t *parser)
 {
-    if (*line == '%' || *line == 'r')
-        return (argument_t) {
-            *line == '%' ? T_DIR : T_REG,
-            *line == '%' ? DIR_SIZE : *line == 'r' ? REG_SIZE : IND_SIZE,
-            line + 1,
-         };
+    directive_t *name = get_directive(parser, "name");
+    directive_t *comment = get_directive(parser, "comment");
 
-    return (argument_t) {T_IND, IND_SIZE, line};
+    if (name == NULL || comment == NULL)
+        return -1;
+
+    redcode_write(parser, (uint32_t []) {REDCODE_HEADER}, 4, 1);
+    redcode_write(parser, name->value, 1, my_strlen(name->value));
+
+    for (size_t i = 0; i < NAME_LENGTH; i++)
+        redcode_write(parser, (uint8_t []) {0}, 1, 1);
+
+    redcode_write(parser, (uint32_t []) {__bswap_32(parser->size)}, 4, 1);
+    redcode_write(parser, comment->value, 1, my_strlen(comment->value));
+
+    for (size_t i = 0; i < (COMMENT_LENGTH - sizeof (int)); i++)
+        redcode_write(parser, (uint8_t []) {0}, 1, 1);
+
+    return 0;
 }
 
-static int encode(parser_t *parser, char *str, const token_t *token)
+static int encode(parser_t *parser)
 {
-    char *tok = my_strtok(str + my_strlen(token->name) + 1, (char []) {
-        SEPARATOR_CHAR
-    });
-
-    redcode_write(parser, &token->code, sizeof token->code, 1);
-
-    while (tok != NULL) {
-        argument_t argument = get_argument(tok);
-        printf("%ld\n", argument.size);
-        write_argument(parser, tok, parser->dest, argument.size);
-
-        tok = my_strtok(NULL, (char []) {SEPARATOR_CHAR});
-    }
+    encode_header(parser);
+    encode_instructions(parser);
 
     return 0;
 }
@@ -53,26 +62,23 @@ static int encode(parser_t *parser, char *str, const token_t *token)
 int redcode_encode(FILE *src, FILE *dst)
 {
     char *line = NULL;
-    parser_t parser = {0, 0, src, dst};
+    parser_t parser = {src, dst, new_list(), new_list(), 0};
 
-    redcode_write(&parser, (int []) {REDCODE_HEADER}, sizeof(int), 1);
-
-    if (parse_name(&parser) < 0)
-        return -1;
-    if (parse_size(&parser) < 0)
-        return -1;
-    if (parse_comment(&parser) < 0)
+    if (parser.instructions == NULL || parser.directives == NULL)
         return -1;
     while (readfile(src, &line) >= 0) {
-        const token_t *token = get_token(line);
+        instruction_t *ins = NULL;
+        directive_t *directive = NULL;
 
-        if (token == NULL)
+        if ((ins = parse_instruction(&parser, line)) == NULL)
             return -1;
-
-        encode(&parser, line, token);
+        if (ins->mnemonic.name != NULL || ins->label != NULL)
+            list_push(parser.instructions, ins);
+        else if ((directive = parse_directive(line)) != NULL)
+            list_push(parser.directives, directive);
     }
 
-    redcode_write(&parser, (off_t []) {parser.offset}, sizeof parser.offset, 1);
+    encode(&parser);
 
     return 0;
 }
