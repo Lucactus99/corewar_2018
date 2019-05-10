@@ -11,13 +11,13 @@ CFLAGS += -Wshadow -Wno-unused-parameter -Wpointer-arith
 LDFLAGS = -Llib/libmy -Llib/liblist -Llib/libredcode
 LDLIBS = -lmy -llist -lredcode
 
-VM_NAME = corewar
-VM_SRCS = $(wildcard src/vm/*.c) $(wildcard src/vm/**/*.c)
-VM_OBJS = $(VM_SRCS:.c=.o)
-
-ASM_NAME = asm
+ASM_NAME = asm/asm
 ASM_SRCS = $(wildcard src/asm/*.c) $(wildcard src/asm/**/*.c)
 ASM_OBJS = $(ASM_SRCS:.c=.o)
+
+VM_NAME = corewar/corewar
+VM_SRCS = $(wildcard src/vm/*.c) $(wildcard src/vm/**/*.c)
+VM_OBJS = $(VM_SRCS:.c=.o)
 
 all: $(ASM_NAME) $(VM_NAME)
 
