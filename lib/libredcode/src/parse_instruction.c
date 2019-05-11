@@ -50,6 +50,7 @@ instruction_t *parse_instruction(parser_t *parser, char *str)
     get_arguments(parser, ins, str);
 
     ins->offset = parser->size;
+
     if (ins->mnemonic.name != NULL)
         parser->size = parser->size + ins->size + 1 + ins->mnemonic.coding_byte;
 

@@ -8,7 +8,6 @@
 #include "redcode.h"
 #include "my/my_ctype.h"
 #include "my/my_string.h"
-#include <stdbool.h>
 
 static const mnemonic_t mnemonics[] = {
     {"live", 1, {T_DIR}, 0x01, 10, false},

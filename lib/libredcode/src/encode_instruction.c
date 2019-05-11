@@ -10,17 +10,19 @@
 #include <limits.h>
 
 #include "redcode.h"
+#include "my/my_math.h"
 #include "my/my_string.h"
 #include "my/my_stdlib.h"
 
 static void coding_byte(parser_t *parser, instruction_t *ins)
 {
+    size_t i;
     char byte[CHAR_BIT + 1] = {0};
     size_t i = 0;
 
     if (!ins->mnemonic.coding_byte)
         return;
-    for (; i < ins->mnemonic.argc; i++) {
+    for (i = 0; i < ins->mnemonic.argc; i++) {
         if ((ins->argv[i].type & T_IND) == T_IND)
             my_strcat(byte, "11");
         if ((ins->argv[i].type & T_DIR) == T_DIR)
@@ -28,8 +30,10 @@ static void coding_byte(parser_t *parser, instruction_t *ins)
         if ((ins->argv[i].type & T_REG) == T_REG)
             my_strcat(byte, "01");
     }
+
     for (; i < 4; i++)
         my_strcat(byte, "00");
+
     WRITE(parser, (uint8_t []) {strtol(byte, NULL, 2)}, 1, 1);
 }
 
@@ -38,14 +42,9 @@ static int encode_label(parser_t *parser, instruction_t *ins, size_t i)
     instruction_t *label = find_label(parser, ins->argv[i].value);
 
     if (label == NULL)
-        return (-1);
-    if (ins->offset > label->offset) {
-        WRITE(parser, (uint8_t []) {0xff}, 1, 1);
-        WRITE(parser, (uint8_t []) {256 - (ins->offset - label->offset)}, 1, 1);
-    } else {
-        WRITE(parser, (uint8_t []) {0}, 1, 1);
-        WRITE(parser, (uint8_t []) {(label->offset - ins->offset)}, 1, 1);
-    }
+        return -1;
+
+    WRITE(parser, (uint16_t []) {SWAP_16(label->offset - ins->offset)}, 2, 1);
 
     return (0);
 }
