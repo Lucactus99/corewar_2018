@@ -1,0 +1,21 @@
+stages:
+  - build
+  - test
+
+build:
+  image: gcc
+  stage: build
+  script:
+    - make
+  artifacts:
+    paths:
+      - asm
+      - champ
+      - corewar
+
+norm:
+  stage: test
+  image: adrienbrignon/epitech-c
+  allow_failure: yes
+  script:
+    - normez -u
