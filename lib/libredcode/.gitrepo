@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://git.abrignon.dev/adrienbrignon/libredcode
 	branch = master
-	commit = 0d3db8a6686f7de916e9c3287fbd174b10fcba9a
-	parent = 3161f807ebfa60135e472e3742d4b68af902cf54
+	commit = d39b1b3b81b8217962c091205593c9c9fca02844
+	parent = 4db52863120a44a86020fcba238e721fcdc1509a
 	method = merge
 	cmdver = 0.4.0
