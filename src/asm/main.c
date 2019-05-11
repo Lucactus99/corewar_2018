@@ -5,25 +5,10 @@
 ** The assembler entry point.
 */
 
-#include <limits.h>
 #include <stdlib.h>
 
 #include "corewar.h"
 #include "redcode.h"
-#include "my_string.h"
-
-static char *get_name(const char *base)
-{
-    char *end = my_strrchr(base, '.');
-    size_t len = end - base;
-
-    if (end == NULL)
-        return (char *) base;
-    if (end[1] == 's' && end[2] == '\0')
-        return my_strndup(base, len);
-
-    return (char *) base;
-}
 
 int main(int argc, char const *argv[])
 {
