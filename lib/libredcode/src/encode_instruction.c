@@ -5,6 +5,7 @@
 ** Encode an instruction.
 */
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -27,12 +28,12 @@ static uint8_t get_dec(const char *binary)
 
 static void coding_byte(parser_t *parser, instruction_t *ins)
 {
-    size_t i;
-    char byte[CHAR_BIT + 1] = {0};
+    size_t i = 0;
+    char byte[sizeof (uint64_t) + 1] = {0};
 
     if (!ins->mnemonic.coding_byte)
         return;
-    for (i = 0; i < ins->mnemonic.argc; i++) {
+    for (; i < ins->mnemonic.argc; i++) {
         if ((ins->argv[i].type & T_IND) == T_IND)
             my_strcat(byte, "11");
         if ((ins->argv[i].type & T_DIR) == T_DIR)
@@ -41,22 +42,10 @@ static void coding_byte(parser_t *parser, instruction_t *ins)
             my_strcat(byte, "01");
     }
 
-    for (; i < 4; i++)
+    for (; i < sizeof (uint32_t); i++)
         my_strcat(byte, "00");
 
     WRITE(parser, (uint8_t []) {get_dec(byte)}, 1, 1);
-}
-
-static int encode_label(parser_t *parser, instruction_t *ins, size_t i)
-{
-    instruction_t *label = find_label(parser, ins->argv[i].value);
-
-    if (label == NULL)
-        return -1;
-
-    WRITE(parser, (uint16_t []) {SWAP_16(label->offset - ins->offset)}, 2, 1);
-
-    return (0);
 }
 
 int encode_instruction(parser_t *parser, instruction_t *ins)
@@ -65,8 +54,11 @@ int encode_instruction(parser_t *parser, instruction_t *ins)
     coding_byte(parser, ins);
 
     for (size_t i = 0; i < ins->mnemonic.argc; i++) {
-        if ((ins->argv[i].type & T_LAB) == T_LAB)
-            encode_label(parser, ins, i);
+        if ((ins->argv[i].type & T_LAB) == T_LAB) {
+            if (encode_label(parser, ins, ins->argv[i].value) < 0)
+                return -1;
+        }
+
         if (ins->argv[i].size == 1)
             WRITE(parser, ENCODE_8(ins->argv[i].value), 1, 1);
         if (ins->argv[i].size == 2 && (ins->argv[i].type & T_LAB) == 0)
