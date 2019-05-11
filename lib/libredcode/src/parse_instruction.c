@@ -19,11 +19,16 @@ static int get_arguments(parser_t *parser, instruction_t *ins, char *line)
         return -1;
 
     str = line + my_strlen(ins->mnemonic.name) + 1;
+
+    if (ins->label != NULL)
+        str += my_strlen(ins->label) + 1;
+
     arg = my_strtok(str, (char []) {SEPARATOR_CHAR, '\0'});
 
     for (size_t i = 0; i < ins->mnemonic.argc && arg != NULL; i++) {
         ins->argv[i] = get_argument(ins->mnemonic.argv[i], arg);
         ins->size = ins->size + ins->argv[i].size;
+        printf("%s\n", ins->argv[i].value);
         arg = my_strtok(NULL, (char []) {SEPARATOR_CHAR, '\0'});
     }
 
@@ -48,8 +53,8 @@ instruction_t *parse_instruction(parser_t *parser, char *str)
 
     get_arguments(parser, ins, str);
 
-    parser->size = parser->size + ins->size + 2;
     ins->offset = parser->size;
+    parser->size = parser->size + ins->size + 1 + ins->mnemonic.coding_byte;
 
     return ins;
 }

@@ -8,10 +8,6 @@
 #ifndef REDCODE_H
 #define REDCODE_H
 
-#include <unistd.h>
-#include <stdint.h>
-#include <byteswap.h>
-
 #include "types.h"
 
 #define ENCODE_8(val) ((uint8_t []) {my_atoi(val)})
@@ -34,6 +30,7 @@ argument_t get_argument(unsigned int types, const char *str);
 directive_t *parse_directive(const char *str);
 directive_t *get_directive(parser_t *parser, const char *name);
 
+instruction_t *find_label(parser_t *parser, const char *name);
 instruction_t *parse_instruction(parser_t *parser, char *line);
 
 #endif

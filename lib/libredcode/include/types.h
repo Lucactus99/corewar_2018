@@ -10,6 +10,11 @@
 
 #include <stdio.h>
 #include <stddef.h>
+#include <unistd.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <byteswap.h>
+#include <sys/types.h>
 
 #include "list.h"
 #include "config.h"
@@ -21,11 +26,6 @@ typedef struct parser {
     list_t *directives;
     size_t size;
 } parser_t;
-
-typedef struct label {
-    const char *name;
-    off_t offset;
-} label_t;
 
 typedef struct directive {
     const char *name;
@@ -53,6 +53,7 @@ typedef struct mnemonic {
     int argv[MAX_ARGS];
     char code;
     size_t cycles;
+    bool coding_byte;
 } mnemonic_t;
 
 typedef struct instruction {
