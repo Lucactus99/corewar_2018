@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+success=0
+skipped=0
+failures=0
+
+if [ ! -x "asm/asm" ]; then
+    echo "No executable found, please build the project first."
+
+    exit 1
+fi
+
+for champion in champions/src/*.s; do
+    name=$(basename "$champion" | cut -d. -f1)
+    output="champions/src/$name.cor"
+    expected="champions/bin/$name.cor"
+
+    echo -e "Testing champion \e[93m$name\e[39m..."
+
+    if [ ! -f "champions/bin/$name.cor" ]; then
+        let "skipped=skipped+1"
+        echo -e "No compiled champion \e[91m$name\e[39m found, skipping test..."
+
+        continue
+    fi
+
+    asm/asm "$champion"
+
+    if [ $? -ne 0 ]; then
+        let "skipped=skipped+1"
+        echo -e "Failed to compile \e[91m$name\e[39m, skipping test..."
+
+        continue
+    fi
+
+    echo -e "Compiled \e[95m$name\e[39m."
+
+    diff "$output" "$expected" > /dev/null
+
+    if [ $? -ne 0 ]; then
+        let "failures=failures+1"
+        echo -e "The champion \e[91m$name\e[39m has been poorly compiled.\n"
+
+        continue
+    fi
+
+    let "success=success+1"
+    echo -e "The champion \e[92m$name\e[39m has been properly compiled.\n"
+done
+
+echo -e "[COREWAR] Success: \e[92m$success\e[39m | Failures: \e[91m$failures\e[39m | Skipped: \e[37m$skipped\e[39m"
+
+if [ $failures -ne 0 ]; then
+    exit 1
+fi;
+
+exit 0

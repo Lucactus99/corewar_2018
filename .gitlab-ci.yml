@@ -9,9 +9,10 @@ build:
     - make
   artifacts:
     paths:
+      - bin
       - asm
-      - champ
       - corewar
+      - champions
 
 norm:
   stage: test
@@ -19,3 +20,9 @@ norm:
   allow_failure: yes
   script:
     - normez -u
+
+test:
+  stage: test
+  image: adrienbrignon/epitech-c
+  script:
+    - bin/test
