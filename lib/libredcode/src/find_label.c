@@ -16,6 +16,7 @@ instruction_t *find_label(parser_t *parser, const char *name)
         instruction_t *ins = node->data;
 
         if (ins->label != NULL && my_strcmp(ins->label, name) == 0) {
+            printf("-%s %ld\n", ins->label, ins->offset);
             return ins;
         }
 

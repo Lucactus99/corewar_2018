@@ -23,6 +23,7 @@ argument_t get_argument(unsigned int types, const char *str)
 {
     while (my_isspace(*str))
         str++;
+    printf("~> %s\n", str);
     if (*str == LAB_CHAR)
         return (argument_t) {T_LAB | T_IND, IND_SIZE, extract_label((char *) str)};
     if (*str == DIR_CHAR && *(str + 1) == LAB_CHAR)
