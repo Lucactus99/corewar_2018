@@ -6,4 +6,4 @@
 .comment "This is SPARTAAAAA"
 
 repeat:
-        lld %1, %:repeat, r4
+        lld %:repeat, r4
