@@ -20,7 +20,7 @@ static int check_argument(instruction_t *ins, const char *arg, size_t i)
     return 0;
 }
 
-static int get_arguments(parser_t *parser, instruction_t *ins, char *line)
+static int get_arguments(instruction_t *ins, char *line)
 {
     size_t i;
     char *str = NULL;
@@ -47,7 +47,7 @@ instruction_t *parse_instruction(parser_t *parser, char *str)
     instruction_t *ins = NULL;
     size_t len = my_strcspn(str, (char []) {LAB_CHAR, '\0'});
 
-    if ((ins = malloc(sizeof *ins)) == NULL)
+    if ((ins = new_instruction()) == NULL)
         return NULL;
     if (str[len] == ':' && (str[len + 1] == ' ' || str[len + 1] == '\0'))
         if ((ins->label = my_strndup(str, len)) == NULL)
@@ -55,7 +55,7 @@ instruction_t *parse_instruction(parser_t *parser, char *str)
 
     ins->mnemonic = get_mnemonic(ins->label ? str + len + 1 : str);
 
-    if (get_arguments(parser, ins, str) < 0)
+    if (get_arguments(ins, str) < 0)
         return NULL;
 
     ins->offset = parser->size;
