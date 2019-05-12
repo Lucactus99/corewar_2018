@@ -37,7 +37,7 @@ for champion in champions/src/*.s; do
 
     if [ $? -ne 0 ]; then
         let "failures=failures+1"
-        echo -e "failures to compile \e[91m$name\e[39m, more informations above..."
+        echo -e "Failed to compile \e[91m$name\e[39m, more informations above..."
 
         continue
     fi
