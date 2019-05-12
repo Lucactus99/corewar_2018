@@ -50,5 +50,3 @@ ssize_t readfile(FILE *fp, char **ptr)
 
     return len;
 }
-
-
