@@ -1,7 +1,7 @@
 # Binaries
-/asm
-/corewar
-/unit-tests
+/asm/asm
+/corewar/corewar
+/champions/src/*.cor
 
 # Visual Studio Code
 /.vscode
