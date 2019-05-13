@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://git.abrignon.dev/adrienbrignon/libmy
 	branch = master
-	commit = aa52d97586aee5f33b6ea8ac913221cb781a5cfb
-	parent = 05ef97a6ed4f2eb8079ae04968181c874892746f
+	commit = 2b589a97a941b8552dcd584da71e05432807a5f3
+	parent = 5c944e6334a1de3d58ed577f7e429346edf5d51c
 	method = merge
 	cmdver = 0.4.0
