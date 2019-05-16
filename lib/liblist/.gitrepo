@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://git.abrignon.dev/adrienbrignon/liblist
 	branch = master
-	commit = 905e3edf91e643142b00199c1af80d195b4dc836
-	parent = aab7f49285d7461782f7fd89c70b96b3f6308bc7
+	commit = 772f37fc7a6c9db5026097a50e8627e538338c5c
+	parent = f4d74341b4014237288377c648e5e08095a205db
 	method = merge
 	cmdver = 0.4.0
