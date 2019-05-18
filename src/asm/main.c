@@ -40,7 +40,7 @@ int main(int argc, char const *argv[])
     }
     if (redcode_setoutput(rc, fopen(str_join(name, '.', "cor"), "wb")) < 0)
         return EXIT_ERROR;
-    if (redcode_encode(rc) < 0)
+    if (redcode_encode(rc) < 0 || fclose(rc->out) < 0 || fclose(rc->in) < 0)
         return EXIT_ERROR;
     return EXIT_SUCCESS;
 }

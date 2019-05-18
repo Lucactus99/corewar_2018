@@ -9,6 +9,8 @@ CC = gcc
 CFLAGS = -O2 -Iinclude -pipe
 CFLAGS += -Ilib/libmy/include -Ilib/libredcode/include -Ilib/liblist/include
 CFLAGS += -Wall -Wextra -Wshadow -Wno-unused-parameter -Wpointer-arith
+CFLAGS += -Wuninitialized -Wcast-align
+CFLAGS += -fstack-protector
 LDFLAGS = -Llib/libmy -Llib/liblist -Llib/libredcode
 LDLIBS = -lredcode -lmy -llist
 

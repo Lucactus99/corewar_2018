@@ -3,6 +3,7 @@
 success=0
 skipped=0
 failures=0
+compare=1
 
 echo -e "[COREWARION] Initializing...\n"
 
@@ -23,7 +24,7 @@ fi
 
 for champion in champions/src/*.s; do
     name=$(basename "$champion" | cut -d. -f1)
-    output="champions/src/$name.cor"
+    got="champions/src/$name.cor"
     expected="champions/bin/$name.cor"
 
     if [ ! -f "champions/bin/$name.cor" ]; then
@@ -44,11 +45,17 @@ for champion in champions/src/*.s; do
 
     echo -e "Compiling \e[95m$name\e[39m champion..."
 
-    diff "$output" "$expected" > /dev/null
+    diff "$got" "$expected" > /dev/null
 
     if [ $? -ne 0 ]; then
         let "failures=failures+1"
-        echo -e "The champion \e[91m$name\e[39m has been poorly compiled.\n"
+        echo -e "The champion \e[91m$name\e[39m has been poorly compiled."
+
+        if [ -x "$(command -v hexdump)" ]; then
+            diff --color -u <(hexdump -C "$got") <(hexdump -C "$expected")
+        fi
+
+        echo -en "\n"
 
         continue
     fi
